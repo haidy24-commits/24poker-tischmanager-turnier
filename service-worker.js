@@ -1,4 +1,4 @@
-const CACHE='24poker-tischmanager-online-v1';
+const CACHE='24poker-tischmanager-online-v2';
 const FILES=['./','./index.html','./app.js','./supabase-config.js','./manifest.webmanifest','./icon.svg','./apple-touch-icon.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));

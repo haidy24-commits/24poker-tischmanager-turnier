@@ -1,6 +1,6 @@
 create table if not exists public.tournament_tables (
   table_id text primary key check (table_id ~ '^[A-M]$'),
-  mode integer not null default 10 check (mode in (9,10)),
+  mode integer not null default 9 check (mode in (9,10)),
   enabled boolean not null default true,
   updated_at timestamptz not null default now()
 );

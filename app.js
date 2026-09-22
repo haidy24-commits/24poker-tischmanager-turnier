@@ -8,7 +8,7 @@
   let data = { seats: {}, modes: {}, enabled: {}, reentryTotal: 0 };
   let drag = null, suppressClickSeat = null, suppressClickUntil = 0, reloadTimer = null, busy = false;
   const seatKey = (table, seat) => `${table}-${seat}`;
-  const modeFor = table => Number(data.modes[table]) === 9 ? 9 : 10;
+  const modeFor = table => Number(data.modes[table]) === 10 ? 10 : 9;
   const enabledFor = table => data.enabled[table] !== false;
   function setNotice(text, restore = true) { notice.textContent = text; if (restore) setTimeout(() => { notice.textContent = 'Live verbunden · Änderungen erscheinen automatisch auf allen Geräten.'; }, 2200); }
 
