@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#101512">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tischmanager">
+  <title>24Poker Tischmanager</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <style>
+    :root{color-scheme:dark;--bg:#101512;--card:#1b231e;--line:#334039;--text:#f5f5f2;--muted:#aeb8b1;--green:#087648;--gold:#f4c430;--red:#dc3c38;--seat:#303a34;--shadow:0 8px 24px #0005}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+    body{padding:calc(14px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));overscroll-behavior:none}
+    button{font:inherit;touch-action:manipulation}
+    .app{max-width:1480px;margin:auto}
+    header{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+    h1{font-size:clamp(24px,3vw,36px);line-height:1;margin:0}.subtitle{color:var(--muted);font-size:14px;margin-top:7px}
+    .summary{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#202923;font-weight:800}.pill.yellow{background:var(--gold);color:#151515}.pill.red{background:var(--red);color:white}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:11px 12px;background:#171e1a;border:1px solid var(--line);border-radius:14px}
+    .legend{display:flex;gap:13px;flex-wrap:wrap;color:var(--muted);font-size:13px}.legend span{display:flex;align-items:center;gap:6px}.swatch{width:25px;height:25px;border-radius:8px;border:2px solid #68736c;background:var(--seat)}.swatch.yellow{background:var(--gold);border-color:#a57e00}.swatch.red{background:var(--red);border-color:#8e1d1a}
+    .action{min-height:44px;border:1px solid #536159;border-radius:11px;padding:8px 14px;background:#28322c;color:white;font-weight:800;cursor:pointer}.action.danger{background:#802622;border-color:#a83833}
+    .room{display:grid;grid-template-columns:repeat(auto-fit,minmax(292px,1fr));gap:16px}
+    .table-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px 9px 13px;box-shadow:var(--shadow);min-width:0;transition:opacity .18s,filter .18s}.table-card.inactive{opacity:.52;filter:saturate(.35)}
+    .table-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:1px 4px 7px}.table-name{font-size:20px;font-weight:900}.table-meta{color:var(--muted);font-size:12px;margin-top:2px}
+    .head-actions{display:flex;gap:6px;align-items:center}.mode{display:flex;padding:3px;background:#111713;border:1px solid var(--line);border-radius:10px}.mode button{min-width:38px;min-height:34px;border:0;border-radius:7px;background:transparent;color:var(--muted);font-weight:900;cursor:pointer}.mode button.active{background:var(--gold);color:#171717}.table-power,.reset-table{min-height:40px;border:1px solid var(--line);border-radius:10px;background:#29332d;color:white;padding:7px 10px;font-weight:800;cursor:pointer}.table-power.on{background:#087648;border-color:#26a36f}.table-power.off{background:#672b28;border-color:#9a403b}.table-card.inactive .mode button,.table-card.inactive .reset-table{pointer-events:none}
+    .board{position:relative;width:100%;max-width:330px;aspect-ratio:1/.83;margin:0 auto}
+    .felt{position:absolute;left:21%;top:25%;width:58%;height:50%;border-radius:48%;background:linear-gradient(145deg,#138155,#075c3b);border:8px solid #6b3e22;box-shadow:inset 0 0 0 2px #ffffff25,0 5px 12px #0007;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white}.felt-letter{font-size:34px;font-weight:950;line-height:1}.felt-label{font-size:11px;font-weight:850;opacity:.8;margin-top:5px}
+    .dealer{position:absolute;left:50%;top:0;transform:translateX(-50%);width:52px;height:52px;border-radius:14px;border:2px solid #d8b24a;background:#f0e4b4;color:#282111;box-shadow:0 3px 8px #0008;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:950;z-index:2;cursor:default}.dealer strong{font-size:19px;line-height:1}.dealer span{font-size:8px;margin-top:4px;letter-spacing:.5px}
+    .seat{position:absolute;width:50px;height:50px;border-radius:50%;border:2px solid #718078;background:var(--seat);color:white;font-weight:900;cursor:pointer;box-shadow:0 3px 8px #0008;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;transform:translate(-50%,-50%);transition:transform .08s,opacity .15s,outline .08s;touch-action:none}.seat:active{transform:translate(-50%,-50%) scale(.92)}.seat:focus-visible{outline:4px solid #75a7ff;outline-offset:2px}.seat[data-state="1"]{background:var(--gold);color:#111;border-color:#a57e00}.seat[data-state="2"]{background:var(--red);color:white;border-color:#8e1d1a}.seat.hidden{display:none}.seat:disabled{cursor:default}.seat.dragging{opacity:.28}.seat.drop-target{outline:5px solid #65e6a6;outline-offset:3px}.seat.drop-blocked{outline:5px solid #ff746e;outline-offset:3px}.seat-no{font-size:17px}.state-label{font-size:8px;margin-top:3px;letter-spacing:.1px}
+    .drag-ghost{position:fixed;z-index:9999;width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;font-weight:900;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 10px 25px #000a}.drag-ghost[data-state="1"]{background:var(--gold);color:#111;border:3px solid #a57e00}.drag-ghost[data-state="2"]{background:var(--red);color:white;border:3px solid #8e1d1a}.drag-ghost .seat-no{font-size:17px}.drag-ghost .state-label{font-size:8px;margin-top:3px}.is-dragging{user-select:none;-webkit-user-select:none}
+    .notice{text-align:center;color:var(--muted);font-size:12px;margin:16px 0 0;min-height:18px}
+    @media(max-width:680px){body{padding-left:7px;padding-right:7px}.room{grid-template-columns:1fr}.table-card{width:100%;max-width:390px;margin:auto}.toolbar{align-items:flex-start}.reset-table{padding:6px 8px}.head-actions{gap:4px}}
+    @media(orientation:landscape) and (max-height:700px){.room{grid-template-columns:repeat(auto-fit,minmax(275px,1fr))}}
+  </style>
+</head>
+<body>
+<main class="app">
+  <header><div><h1>24Poker Tischmanager</h1><div class="subtitle">13 Tische A–M · je Tisch 9- oder 10-handed</div></div><div class="summary" aria-live="polite"><span class="pill" id="free-count">Frei: 130</span><span class="pill" id="reentry-total">Re-Entry total: 0</span><span class="pill yellow" id="yellow-count">Re-Entry 1: 0</span><span class="pill red" id="red-count">Re-Entry 2: 0</span></div></header>
+  <div class="toolbar"><div class="legend"><span><i class="swatch"></i>frei</span><span><i class="swatch yellow"></i>Re-Entry 1</span><span><i class="swatch red"></i>Re-Entry 2</span></div><button class="action danger" id="reset-all" type="button">Alle Plätze zurücksetzen</button></div>
+  <div class="room" id="room" aria-label="Pokerraum mit 13 Tischen"></div>
+  <div class="notice" id="notice">Verbindung zur gemeinsamen Turnierdatenbank wird hergestellt …</div>
+</main>
+<script type="text/plain" id="legacy-local-version">
+(()=>{'use strict';
+ const letters='ABCDEFGHIJKLM'.split(''), storageKey='24poker-table-manager-v3';
+ const room=document.getElementById('room'), notice=document.getElementById('notice');
+  let data={seats:{},modes:{},enabled:{},reentryTotal:null};
+  try{const saved=JSON.parse(localStorage.getItem(storageKey)||'{}');if(saved&&typeof saved==='object')data={seats:saved.seats||{},modes:saved.modes||{},enabled:saved.enabled||{},reentryTotal:Number.isFinite(Number(saved.reentryTotal))?Number(saved.reentryTotal):null}}catch(_){ }
+ // Importiert Sitzstände aus der bisherigen 10er-Version, falls vorhanden.
+ if(!Object.keys(data.seats).length){try{const old=JSON.parse(localStorage.getItem('24poker-table-manager-v2')||'{}');if(old&&typeof old==='object')data.seats=old}catch(_){}}
+ if(data.reentryTotal===null)data.reentryTotal=Object.values(data.seats).reduce((sum,value)=>sum+Math.max(0,Math.min(2,Number(value)||0)),0);
+ const seatKey=(table,seat)=>table+'-'+seat;
+ const modeFor=table=>Number(data.modes[table])===9?9:10;
+ const enabledFor=table=>data.enabled[table]!==false;
+ function save(){try{localStorage.setItem(storageKey,JSON.stringify(data))}catch(_){notice.textContent='Speichern ist in diesem Browsermodus nicht verfügbar.'}}
+ function makeCard(letter){
+  const card=document.createElement('section');card.className='table-card';card.dataset.table=letter;
+  card.innerHTML=`<div class="table-head"><div><div class="table-name">Tisch ${letter}</div><div class="table-meta"></div></div><div class="head-actions"><button type="button" class="table-power on" aria-label="Tisch ${letter} ein- oder ausschalten">Ein</button><div class="mode" role="group" aria-label="Plätze an Tisch ${letter}"><button type="button" data-mode="9">9</button><button type="button" data-mode="10">10</button></div><button type="button" class="reset-table" aria-label="Tisch ${letter} zurücksetzen">Reset</button></div></div><div class="board"><div class="felt"><div class="felt-letter">${letter}</div><div class="felt-label">TISCH</div></div><div class="dealer" aria-label="Fiktiver Dealerplatz, nicht anklickbar"><strong>D</strong><span>DEALER</span></div></div>`;
+  const board=card.querySelector('.board');
+  for(let n=1;n<=10;n++){const b=document.createElement('button');b.type='button';b.className='seat p'+n;b.dataset.table=letter;b.dataset.seat=String(n);b.innerHTML=`<span class="seat-no">${n}</span><span class="state-label"></span>`;b.addEventListener('click',()=>{if(suppressClickSeat===b&&performance.now()<suppressClickUntil){suppressClickSeat=null;return}const k=seatKey(letter,n),current=Number(data.seats[k])||0;if(current===2){if(!confirm('Player Bust? Der Platz wird wieder freigegeben.'))return;data.seats[k]=0;notice.textContent=`Player Bust an Tisch ${letter}, Platz ${n}. Der Platz ist wieder frei.`;setTimeout(()=>notice.textContent='Änderungen werden automatisch auf diesem Gerät gespeichert.',2200)}else{data.seats[k]=current+1;data.reentryTotal++}save();render()});board.appendChild(b)}
+  card.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{data.modes[letter]=Number(btn.dataset.mode);save();render()}));
+  card.querySelector('.table-power').addEventListener('click',()=>{data.enabled[letter]=!enabledFor(letter);save();render()});
+  card.querySelector('.reset-table').addEventListener('click',()=>{for(let n=1;n<=modeFor(letter);n++)data.seats[seatKey(letter,n)]=0;save();render()});room.appendChild(card)
+ }
+ letters.forEach(makeCard);
+ let drag=null,suppressClickSeat=null,suppressClickUntil=0;
+ const clearDropMarks=()=>room.querySelectorAll('.drop-target,.drop-blocked').forEach(el=>el.classList.remove('drop-target','drop-blocked'));
+ function targetAt(x,y,source){const hit=document.elementFromPoint(x,y),seat=hit&&hit.closest('.seat');return seat&&seat!==source&&!seat.classList.contains('hidden')&&!seat.disabled?seat:null}
+ function beginDrag(source,event){
+  drag.dragging=true;source.classList.add('dragging');document.body.classList.add('is-dragging');
+  const ghost=document.createElement('div');ghost.className='drag-ghost';ghost.dataset.state=source.dataset.state;ghost.innerHTML=source.innerHTML;document.body.appendChild(ghost);drag.ghost=ghost;moveGhost(event.clientX,event.clientY)
+ }
+ function moveGhost(x,y){if(!drag||!drag.ghost)return;drag.ghost.style.left=x+'px';drag.ghost.style.top=y+'px';clearDropMarks();const target=targetAt(x,y,drag.source);drag.target=target;if(target)target.classList.add(Number(target.dataset.state)===0?'drop-target':'drop-blocked')}
+ function finishDrag(event){
+  if(!drag)return;const current=drag;if(current.dragging){event.preventDefault();suppressClickSeat=current.source;suppressClickUntil=performance.now()+500;moveGhost(event.clientX,event.clientY);const target=current.target,source=current.source;if(target&&Number(target.dataset.state)===0){data.seats[seatKey(target.dataset.table,target.dataset.seat)]=Number(source.dataset.state);data.seats[seatKey(source.dataset.table,source.dataset.seat)]=0;save();notice.textContent=`Re-Entry von Tisch ${source.dataset.table}, Platz ${source.dataset.seat} nach Tisch ${target.dataset.table}, Platz ${target.dataset.seat} verschoben.`;setTimeout(()=>notice.textContent='Änderungen werden automatisch auf diesem Gerät gespeichert.',2200)}else{notice.textContent=target?'Zielplatz ist bereits belegt.':'Re-Entry wurde nicht verschoben.';setTimeout(()=>notice.textContent='Änderungen werden automatisch auf diesem Gerät gespeichert.',1600)}}
+  current.source.classList.remove('dragging');if(current.ghost)current.ghost.remove();clearDropMarks();document.body.classList.remove('is-dragging');drag=null;render()
+ }
+ room.addEventListener('pointerdown',event=>{const source=event.target.closest('.seat');if(!source||source.disabled||Number(source.dataset.state)===0)return;drag={source,startX:event.clientX,startY:event.clientY,dragging:false,target:null,ghost:null,pointerId:event.pointerId};source.setPointerCapture(event.pointerId)});
+ room.addEventListener('pointermove',event=>{if(!drag||event.pointerId!==drag.pointerId)return;const distance=Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY);if(!drag.dragging&&distance>8)beginDrag(drag.source,event);if(drag.dragging){event.preventDefault();moveGhost(event.clientX,event.clientY)}});
+ room.addEventListener('pointerup',event=>{if(drag&&event.pointerId===drag.pointerId)finishDrag(event)});
+ room.addEventListener('pointercancel',event=>{if(drag&&event.pointerId===drag.pointerId)finishDrag(event)});
+ function render(){let yellow=0,red=0,total=0;
+  letters.forEach(letter=>{const card=room.querySelector(`[data-table="${letter}"]`),mode=modeFor(letter),enabled=enabledFor(letter);let y=0,r=0;card.classList.toggle('inactive',!enabled);const power=card.querySelector('.table-power');power.textContent=enabled?'Ein':'Aus';power.classList.toggle('on',enabled);power.classList.toggle('off',!enabled);power.setAttribute('aria-pressed',String(enabled));
+   card.querySelectorAll('[data-mode]').forEach(b=>{const active=Number(b.dataset.mode)===mode;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
+   card.querySelectorAll('.seat').forEach(seat=>{const n=Number(seat.dataset.seat),hidden=n>mode,k=seatKey(letter,n),state=Math.max(0,Math.min(2,Number(data.seats[k])||0));seat.classList.toggle('hidden',hidden);seat.disabled=!enabled;seat.dataset.state=String(state);seat.querySelector('.state-label').textContent=state===1?'RE-ENTRY 1':state===2?'RE-ENTRY 2':'';seat.setAttribute('aria-label',`Tisch ${letter}, Platz ${n}, ${state===0?'frei':state===1?'Re-Entry 1':'Re-Entry 2'}`);if(!hidden){const angle=(-60+(300/(mode-1))*(n-1))*Math.PI/180;seat.style.left=(50+43*Math.cos(angle))+'%';seat.style.top=(51+43*Math.sin(angle))+'%';total++;if(state===1){yellow++;y++}if(state===2){red++;r++}}});
+   card.querySelector('.table-meta').textContent=(enabled?'':'Aus · ')+`${mode}-handed · ${mode-y-r} frei · ${y} RE1 · ${r} RE2`;
+  });
+  document.getElementById('free-count').textContent='Frei: '+(total-yellow-red);document.getElementById('reentry-total').textContent='Re-Entry total: '+data.reentryTotal;document.getElementById('yellow-count').textContent='Re-Entry 1: '+yellow;document.getElementById('red-count').textContent='Re-Entry 2: '+red;
+ }
+ document.getElementById('reset-all').addEventListener('click',()=>{if(!confirm('Alle Plätze und den Re-Entry-Gesamtzähler zurücksetzen?'))return;letters.forEach(t=>{for(let n=1;n<=modeFor(t);n++)data.seats[seatKey(t,n)]=0});data.reentryTotal=0;save();render();notice.textContent='Alle Plätze und der Re-Entry-Gesamtzähler wurden zurückgesetzt.';setTimeout(()=>notice.textContent='Änderungen werden automatisch auf diesem Gerät gespeichert.',1800)});
+ render();save();
+ if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
