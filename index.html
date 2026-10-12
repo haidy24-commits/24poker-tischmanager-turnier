@@ -35,6 +35,21 @@
     .seat{position:absolute;width:50px;height:50px;border-radius:50%;border:2px solid #718078;background:var(--seat);color:white;font-weight:900;cursor:pointer;box-shadow:0 3px 8px #0008;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;transform:translate(-50%,-50%);transition:transform .08s,opacity .15s,outline .08s;touch-action:none}.seat:active{transform:translate(-50%,-50%) scale(.92)}.seat:focus-visible{outline:4px solid #75a7ff;outline-offset:2px}.seat[data-state="1"]{background:var(--gold);color:#111;border-color:#a57e00}.seat[data-state="2"]{background:var(--red);color:white;border-color:#8e1d1a}.seat.hidden{display:none}.seat:disabled{cursor:default}.seat.dragging{opacity:.28}.seat.drop-target{outline:5px solid #65e6a6;outline-offset:3px}.seat.drop-blocked{outline:5px solid #ff746e;outline-offset:3px}.seat-no{font-size:17px}.state-label{font-size:8px;margin-top:3px;letter-spacing:.1px}
     .drag-ghost{position:fixed;z-index:9999;width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;font-weight:900;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 10px 25px #000a}.drag-ghost[data-state="1"]{background:var(--gold);color:#111;border:3px solid #a57e00}.drag-ghost[data-state="2"]{background:var(--red);color:white;border:3px solid #8e1d1a}.drag-ghost .seat-no{font-size:17px}.drag-ghost .state-label{font-size:8px;margin-top:3px}.is-dragging{user-select:none;-webkit-user-select:none}
     .notice{text-align:center;color:var(--muted);font-size:12px;margin:16px 0 0;min-height:18px}
+    @media(min-width:1100px){
+      .room{grid-template-columns:repeat(6,minmax(150px,1fr));grid-template-rows:repeat(5,minmax(235px,auto));gap:20px 14px;align-items:center;position:relative;padding:18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(90deg,transparent 32.4%,#667069 32.4%,#667069 32.8%,transparent 32.8%) 0 0/100% 25%,linear-gradient(0deg,transparent 74%,#667069 74%,#667069 75%,transparent 75%) 0 0/32.8% 50%,#121814}
+      .table-card{width:100%;max-width:315px;justify-self:center}
+      .table-card[data-table="A"]{grid-column:4;grid-row:1}.table-card[data-table="B"]{grid-column:6;grid-row:1}
+      .table-card[data-table="C"]{grid-column:6;grid-row:2}.table-card[data-table="D"]{grid-column:6;grid-row:3}
+      .table-card[data-table="E"]{grid-column:4;grid-row:2}.table-card[data-table="F"]{grid-column:3;grid-row:2}
+      .table-card[data-table="H"]{grid-column:3;grid-row:4}.table-card[data-table="I"]{grid-column:4;grid-row:4}
+      .table-card[data-table="J"]{grid-column:1;grid-row:1}.table-card[data-table="K"]{grid-column:2;grid-row:1}
+      .table-card[data-table="L"]{grid-column:6;grid-row:4}.table-card[data-table="M"]{grid-column:1;grid-row:3}
+      .table-card[data-table="G"]{grid-column:1 / span 2;grid-row:5;max-width:315px;margin-top:34px;outline:2px dashed #7b8a81;outline-offset:12px;position:relative}
+      .table-card[data-table="G"]::before{content:'GETRÄNKERAUM · NOTTISCH';position:absolute;left:-12px;top:-42px;color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.7px;white-space:nowrap}
+      .table-card.orientation-right .dealer{left:auto;right:-3px;top:42%;transform:translateY(-50%)}
+      .table-card.orientation-left .dealer{left:-3px;top:42%;transform:translateY(-50%)}
+      .table-card.orientation-bottom .dealer{left:50%;top:auto;bottom:-3px;transform:translateX(-50%)}
+    }
     @media(max-width:680px){body{padding-left:7px;padding-right:7px}.room{grid-template-columns:1fr}.table-card{width:100%;max-width:390px;margin:auto}.toolbar{align-items:flex-start}.table-switch-panel{align-items:flex-start;flex-direction:column}.table-switches{width:100%;grid-template-columns:repeat(7,1fr)}.reset-table{padding:6px 8px}.head-actions{gap:4px}}
     @media(orientation:landscape) and (max-height:700px){.room{grid-template-columns:repeat(auto-fit,minmax(275px,1fr))}}
   </style>
@@ -101,6 +116,6 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
-<script src="./app.js?v=3"></script>
+<script src="./app.js?v=4"></script>
 </body>
 </html>

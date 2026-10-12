@@ -11,6 +11,8 @@
   const seatKey = (table, seat) => `${table}-${seat}`;
   const modeFor = table => Number(data.modes[table]) === 10 ? 10 : 9;
   const enabledFor = table => data.enabled[table] !== false;
+  const orientationFor = table => ({ A:'right',B:'left',C:'top',D:'top',E:'right',F:'top',G:'top',H:'bottom',I:'bottom',J:'right',K:'right',L:'top',M:'left' })[table] || 'top';
+  const firstSeatAngle = table => ({ right:30,left:-150,bottom:120,top:-60 })[orientationFor(table)];
   function setNotice(text, restore = true) { notice.textContent = text; if (restore) setTimeout(() => { notice.textContent = 'Live verbunden · Änderungen erscheinen automatisch auf allen Geräten.'; }, 2200); }
 
   async function loadDatabase(showReady = false) {
@@ -30,7 +32,7 @@
   function scheduleReload() { clearTimeout(reloadTimer); reloadTimer = setTimeout(() => loadDatabase(false), 100); }
 
   function makeCard(letter) {
-    const card = document.createElement('section'); card.className = 'table-card'; card.dataset.table = letter;
+    const card = document.createElement('section'); card.className = `table-card orientation-${orientationFor(letter)}`; card.dataset.table = letter;
     card.innerHTML = `<div class="table-head"><div><div class="table-name">Tisch ${letter}</div><div class="table-meta"></div></div><div class="head-actions"><button type="button" class="table-power on" aria-label="Tisch ${letter} ein- oder ausschalten">Ein</button><div class="mode" role="group" aria-label="Plätze an Tisch ${letter}"><button type="button" data-mode="9">9</button><button type="button" data-mode="10">10</button></div><button type="button" class="reset-table" aria-label="Tisch ${letter} zurücksetzen">Reset</button></div></div><div class="board"><div class="felt"><div class="felt-letter">${letter}</div><div class="felt-label">TISCH</div></div><div class="dealer" aria-label="Fiktiver Dealerplatz, nicht anklickbar"><strong>D</strong><span>DEALER</span></div></div>`;
     const board = card.querySelector('.board');
     for (let n = 1; n <= 10; n++) {
@@ -110,7 +112,7 @@
         const n = Number(seat.dataset.seat), hidden = n > mode, state = Math.max(0, Math.min(2, Number(data.seats[seatKey(letter, n)]) || 0));
         seat.classList.toggle('hidden', hidden); seat.disabled = !enabled; seat.dataset.state = String(state); seat.querySelector('.state-label').textContent = state === 1 ? 'RE-ENTRY 1' : state === 2 ? 'RE-ENTRY 2' : '';
         seat.setAttribute('aria-label', `Tisch ${letter}, Platz ${n}, ${state === 0 ? 'frei' : state === 1 ? 'Re-Entry 1' : 'Re-Entry 2'}`);
-        if (!hidden) { const angle = (-60 + (300 / (mode - 1)) * (n - 1)) * Math.PI / 180; seat.style.left = `${50 + 43 * Math.cos(angle)}%`; seat.style.top = `${51 + 43 * Math.sin(angle)}%`; if (enabled) { total++; if (state === 1) { yellow++; y++; } if (state === 2) { red++; r++; } } }
+        if (!hidden) { const angle = (firstSeatAngle(letter) + (300 / (mode - 1)) * (n - 1)) * Math.PI / 180; seat.style.left = `${50 + 43 * Math.cos(angle)}%`; seat.style.top = `${51 + 43 * Math.sin(angle)}%`; if (enabled) { total++; if (state === 1) { yellow++; y++; } if (state === 2) { red++; r++; } } }
       });
       card.querySelector('.table-meta').textContent = `${mode}-handed · ${mode - y - r} frei · ${y} RE1 · ${r} RE2`;
     });
