@@ -21,7 +21,8 @@
     header{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
     h1{font-size:clamp(24px,3vw,36px);line-height:1;margin:0}.subtitle{color:var(--muted);font-size:14px;margin-top:7px}
     .summary{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#202923;font-weight:800}.pill.yellow{background:var(--gold);color:#151515}.pill.red{background:var(--red);color:white}
-    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:11px 12px;background:#171e1a;border:1px solid var(--line);border-radius:14px}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding:11px 12px;background:#171e1a;border:1px solid var(--line);border-radius:14px}
+    .table-switch-panel{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 12px;background:#171e1a;border:1px solid var(--line);border-radius:14px}.table-switch-panel strong{font-size:13px;white-space:nowrap}.table-switches{display:grid;grid-template-columns:repeat(13,minmax(42px,1fr));gap:6px;flex:1}.table-switch{min-height:44px;border:1px solid #536159;border-radius:10px;background:#672b28;color:#ffd8d5;font-weight:950;cursor:pointer;touch-action:manipulation}.table-switch.active{background:#087648;border-color:#26a36f;color:white}.table-switch:active{transform:scale(.95)}
     .legend{display:flex;gap:13px;flex-wrap:wrap;color:var(--muted);font-size:13px}.legend span{display:flex;align-items:center;gap:6px}.swatch{width:25px;height:25px;border-radius:8px;border:2px solid #68736c;background:var(--seat)}.swatch.yellow{background:var(--gold);border-color:#a57e00}.swatch.red{background:var(--red);border-color:#8e1d1a}
     .action{min-height:44px;border:1px solid #536159;border-radius:11px;padding:8px 14px;background:#28322c;color:white;font-weight:800;cursor:pointer}.action.danger{background:#802622;border-color:#a83833}
     .room{display:grid;grid-template-columns:repeat(auto-fit,minmax(292px,1fr));gap:16px}
@@ -34,7 +35,7 @@
     .seat{position:absolute;width:50px;height:50px;border-radius:50%;border:2px solid #718078;background:var(--seat);color:white;font-weight:900;cursor:pointer;box-shadow:0 3px 8px #0008;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;transform:translate(-50%,-50%);transition:transform .08s,opacity .15s,outline .08s;touch-action:none}.seat:active{transform:translate(-50%,-50%) scale(.92)}.seat:focus-visible{outline:4px solid #75a7ff;outline-offset:2px}.seat[data-state="1"]{background:var(--gold);color:#111;border-color:#a57e00}.seat[data-state="2"]{background:var(--red);color:white;border-color:#8e1d1a}.seat.hidden{display:none}.seat:disabled{cursor:default}.seat.dragging{opacity:.28}.seat.drop-target{outline:5px solid #65e6a6;outline-offset:3px}.seat.drop-blocked{outline:5px solid #ff746e;outline-offset:3px}.seat-no{font-size:17px}.state-label{font-size:8px;margin-top:3px;letter-spacing:.1px}
     .drag-ghost{position:fixed;z-index:9999;width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;font-weight:900;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 10px 25px #000a}.drag-ghost[data-state="1"]{background:var(--gold);color:#111;border:3px solid #a57e00}.drag-ghost[data-state="2"]{background:var(--red);color:white;border:3px solid #8e1d1a}.drag-ghost .seat-no{font-size:17px}.drag-ghost .state-label{font-size:8px;margin-top:3px}.is-dragging{user-select:none;-webkit-user-select:none}
     .notice{text-align:center;color:var(--muted);font-size:12px;margin:16px 0 0;min-height:18px}
-    @media(max-width:680px){body{padding-left:7px;padding-right:7px}.room{grid-template-columns:1fr}.table-card{width:100%;max-width:390px;margin:auto}.toolbar{align-items:flex-start}.reset-table{padding:6px 8px}.head-actions{gap:4px}}
+    @media(max-width:680px){body{padding-left:7px;padding-right:7px}.room{grid-template-columns:1fr}.table-card{width:100%;max-width:390px;margin:auto}.toolbar{align-items:flex-start}.table-switch-panel{align-items:flex-start;flex-direction:column}.table-switches{width:100%;grid-template-columns:repeat(7,1fr)}.reset-table{padding:6px 8px}.head-actions{gap:4px}}
     @media(orientation:landscape) and (max-height:700px){.room{grid-template-columns:repeat(auto-fit,minmax(275px,1fr))}}
   </style>
 </head>
@@ -42,6 +43,7 @@
 <main class="app">
   <header><div><h1>24Poker Tischmanager</h1><div class="subtitle">13 Tische A–M · Standard 9-handed · auf 10 umschaltbar</div></div><div class="summary" aria-live="polite"><span class="pill" id="free-count">Frei: 117</span><span class="pill" id="reentry-total">Re-Entry total: 0</span><span class="pill yellow" id="yellow-count">Re-Entry 1: 0</span><span class="pill red" id="red-count">Re-Entry 2: 0</span></div></header>
   <div class="toolbar"><div class="legend"><span><i class="swatch"></i>frei</span><span><i class="swatch yellow"></i>Re-Entry 1</span><span><i class="swatch red"></i>Re-Entry 2</span></div><button class="action danger" id="reset-all" type="button">Alle Plätze zurücksetzen</button></div>
+  <section class="table-switch-panel" aria-label="Tische ein- und ausblenden"><strong>Tische anzeigen</strong><div class="table-switches" id="table-switches"></div></section>
   <div class="room" id="room" aria-label="Pokerraum mit 13 Tischen"></div>
   <div class="notice" id="notice">Verbindung zur gemeinsamen Turnierdatenbank wird hergestellt …</div>
 </main>
@@ -99,6 +101,6 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
-<script src="./app.js"></script>
+<script src="./app.js?v=3"></script>
 </body>
 </html>

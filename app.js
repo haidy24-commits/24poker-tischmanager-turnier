@@ -2,6 +2,7 @@
   'use strict';
   const letters = 'ABCDEFGHIJKLM'.split('');
   const room = document.getElementById('room');
+  const tableSwitches = document.getElementById('table-switches');
   const notice = document.getElementById('notice');
   const config = window.TOURNAMENT_SUPABASE;
   const cloud = window.supabase.createClient(config.url, config.publishableKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
@@ -62,6 +63,13 @@
     if (error) return setNotice(`Änderung nicht gespeichert: ${error.message}`); if (successText) setNotice(successText); await loadDatabase(false);
   }
   letters.forEach(makeCard);
+  letters.forEach(letter => {
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'table-switch'; button.dataset.tableSwitch = letter;
+    button.textContent = letter; button.setAttribute('aria-label', `Tisch ${letter} anzeigen oder ausblenden`);
+    button.addEventListener('click', () => setTable(letter, modeFor(letter), !enabledFor(letter)));
+    tableSwitches.appendChild(button);
+  });
 
   const clearDropMarks = () => room.querySelectorAll('.drop-target,.drop-blocked').forEach(el => el.classList.remove('drop-target', 'drop-blocked'));
   function targetAt(x, y, source) { const hit = document.elementFromPoint(x, y), seat = hit && hit.closest('.seat'); return seat && seat !== source && !seat.classList.contains('hidden') && !seat.disabled ? seat : null; }
@@ -93,15 +101,18 @@
     let yellow = 0, red = 0, total = 0;
     letters.forEach(letter => {
       const card = room.querySelector(`[data-table="${letter}"]`), mode = modeFor(letter), enabled = enabledFor(letter); let y = 0, r = 0;
-      card.classList.toggle('inactive', !enabled); const power = card.querySelector('.table-power'); power.textContent = enabled ? 'Ein' : 'Aus'; power.classList.toggle('on', enabled); power.classList.toggle('off', !enabled); power.setAttribute('aria-pressed', String(enabled));
+      card.hidden = !enabled;
+      const switchButton = tableSwitches.querySelector(`[data-table-switch="${letter}"]`);
+      switchButton.classList.toggle('active', enabled); switchButton.setAttribute('aria-pressed', String(enabled));
+      const power = card.querySelector('.table-power'); power.textContent = 'Ausblenden'; power.classList.add('on'); power.classList.remove('off'); power.setAttribute('aria-pressed', String(enabled));
       card.querySelectorAll('[data-mode]').forEach(button => { const active = Number(button.dataset.mode) === mode; button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active)); });
       card.querySelectorAll('.seat').forEach(seat => {
         const n = Number(seat.dataset.seat), hidden = n > mode, state = Math.max(0, Math.min(2, Number(data.seats[seatKey(letter, n)]) || 0));
         seat.classList.toggle('hidden', hidden); seat.disabled = !enabled; seat.dataset.state = String(state); seat.querySelector('.state-label').textContent = state === 1 ? 'RE-ENTRY 1' : state === 2 ? 'RE-ENTRY 2' : '';
         seat.setAttribute('aria-label', `Tisch ${letter}, Platz ${n}, ${state === 0 ? 'frei' : state === 1 ? 'Re-Entry 1' : 'Re-Entry 2'}`);
-        if (!hidden) { const angle = (-60 + (300 / (mode - 1)) * (n - 1)) * Math.PI / 180; seat.style.left = `${50 + 43 * Math.cos(angle)}%`; seat.style.top = `${51 + 43 * Math.sin(angle)}%`; total++; if (state === 1) { yellow++; y++; } if (state === 2) { red++; r++; } }
+        if (!hidden) { const angle = (-60 + (300 / (mode - 1)) * (n - 1)) * Math.PI / 180; seat.style.left = `${50 + 43 * Math.cos(angle)}%`; seat.style.top = `${51 + 43 * Math.sin(angle)}%`; if (enabled) { total++; if (state === 1) { yellow++; y++; } if (state === 2) { red++; r++; } } }
       });
-      card.querySelector('.table-meta').textContent = `${enabled ? '' : 'Aus · '}${mode}-handed · ${mode - y - r} frei · ${y} RE1 · ${r} RE2`;
+      card.querySelector('.table-meta').textContent = `${mode}-handed · ${mode - y - r} frei · ${y} RE1 · ${r} RE2`;
     });
     document.getElementById('free-count').textContent = `Frei: ${total - yellow - red}`; document.getElementById('reentry-total').textContent = `Re-Entry total: ${data.reentryTotal}`; document.getElementById('yellow-count').textContent = `Re-Entry 1: ${yellow}`; document.getElementById('red-count').textContent = `Re-Entry 2: ${red}`;
   }
