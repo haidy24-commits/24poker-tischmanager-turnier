@@ -12,7 +12,7 @@
   const seatKey = (table, seat) => `${table}-${seat}`;
   const modeFor = table => Number(data.modes[table]) === 10 ? 10 : 9;
   const enabledFor = table => data.enabled[table] !== false;
-  const orientationFor = table => ({ A:'right',B:'left',C:'top',D:'top',E:'right',F:'top',G:'top',H:'bottom',I:'bottom',J:'right',K:'right',L:'top',M:'left' })[table] || 'top';
+  const orientationFor = table => ({ A:'right',B:'left',C:'top',D:'top',E:'right',F:'top',G:'top',H:'bottom',I:'bottom',J:'top',K:'right',L:'right',M:'left' })[table] || 'top';
   const roomLayoutActive = () => viewMode === 'room' && window.matchMedia('(min-width:1100px)').matches;
   const firstSeatAngle = table => roomLayoutActive() ? ({ right:30,left:-150,bottom:120,top:-60 })[orientationFor(table)] : -60;
   function setNotice(text, restore = true) { notice.textContent = text; if (restore) setTimeout(() => { notice.textContent = 'Live verbunden · Änderungen erscheinen automatisch auf allen Geräten.'; }, 2200); }
