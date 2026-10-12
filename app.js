@@ -7,12 +7,14 @@
   const config = window.TOURNAMENT_SUPABASE;
   const cloud = window.supabase.createClient(config.url, config.publishableKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
   let data = { seats: {}, modes: {}, enabled: {}, reentryTotal: 0 };
+  let viewMode = localStorage.getItem('24poker-tournament-view') === 'compact' ? 'compact' : 'room';
   let drag = null, suppressClickSeat = null, suppressClickUntil = 0, reloadTimer = null, busy = false;
   const seatKey = (table, seat) => `${table}-${seat}`;
   const modeFor = table => Number(data.modes[table]) === 10 ? 10 : 9;
   const enabledFor = table => data.enabled[table] !== false;
   const orientationFor = table => ({ A:'right',B:'left',C:'top',D:'top',E:'right',F:'top',G:'top',H:'bottom',I:'bottom',J:'right',K:'right',L:'top',M:'left' })[table] || 'top';
-  const firstSeatAngle = table => ({ right:30,left:-150,bottom:120,top:-60 })[orientationFor(table)];
+  const roomLayoutActive = () => viewMode === 'room' && window.matchMedia('(min-width:1100px)').matches;
+  const firstSeatAngle = table => roomLayoutActive() ? ({ right:30,left:-150,bottom:120,top:-60 })[orientationFor(table)] : -60;
   function setNotice(text, restore = true) { notice.textContent = text; if (restore) setTimeout(() => { notice.textContent = 'Live verbunden · Änderungen erscheinen automatisch auf allen Geräten.'; }, 2200); }
 
   async function loadDatabase(showReady = false) {
@@ -72,6 +74,9 @@
     button.addEventListener('click', () => setTable(letter, modeFor(letter), !enabledFor(letter)));
     tableSwitches.appendChild(button);
   });
+  document.querySelectorAll('[data-view-mode]').forEach(button => button.addEventListener('click', () => {
+    viewMode = button.dataset.viewMode; localStorage.setItem('24poker-tournament-view', viewMode); render();
+  }));
 
   const clearDropMarks = () => room.querySelectorAll('.drop-target,.drop-blocked').forEach(el => el.classList.remove('drop-target', 'drop-blocked'));
   function targetAt(x, y, source) { const hit = document.elementFromPoint(x, y), seat = hit && hit.closest('.seat'); return seat && seat !== source && !seat.classList.contains('hidden') && !seat.disabled ? seat : null; }
@@ -101,6 +106,8 @@
 
   function render() {
     let yellow = 0, red = 0, total = 0;
+    room.classList.toggle('compact-view', !roomLayoutActive());
+    document.querySelectorAll('[data-view-mode]').forEach(button => { const active = button.dataset.viewMode === viewMode; button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active)); });
     letters.forEach(letter => {
       const card = room.querySelector(`[data-table="${letter}"]`), mode = modeFor(letter), enabled = enabledFor(letter); let y = 0, r = 0;
       card.hidden = !enabled;
@@ -119,6 +126,7 @@
     document.getElementById('free-count').textContent = `Frei: ${total - yellow - red}`; document.getElementById('reentry-total').textContent = `Re-Entry total: ${data.reentryTotal}`; document.getElementById('yellow-count').textContent = `Re-Entry 1: ${yellow}`; document.getElementById('red-count').textContent = `Re-Entry 2: ${red}`;
   }
   document.getElementById('reset-all').addEventListener('click', async () => { if (!confirm('Alle Plätze und den Re-Entry-Gesamtzähler für alle Geräte zurücksetzen?')) return; await callRpc('reset_tournament_all', {}, 'Alle Plätze und der Re-Entry-Gesamtzähler wurden zurückgesetzt.'); });
+  window.addEventListener('resize', render);
   cloud.channel('turnier-live').on('postgres_changes', { event: '*', schema: 'public', table: 'tournament_tables' }, scheduleReload).on('postgres_changes', { event: '*', schema: 'public', table: 'tournament_seats' }, scheduleReload).on('postgres_changes', { event: '*', schema: 'public', table: 'tournament_meta' }, scheduleReload).subscribe(status => { if (status === 'SUBSCRIBED') setNotice('Live verbunden · Änderungen erscheinen automatisch auf allen Geräten.', false); });
   loadDatabase(true);
   if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
