@@ -30,13 +30,13 @@
     .table-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:1px 4px 7px}.table-name{font-size:20px;font-weight:900}.table-meta{color:var(--muted);font-size:12px;margin-top:2px}
     .head-actions{display:flex;gap:6px;align-items:center}.mode{display:flex;padding:3px;background:#111713;border:1px solid var(--line);border-radius:10px}.mode button{min-width:38px;min-height:34px;border:0;border-radius:7px;background:transparent;color:var(--muted);font-weight:900;cursor:pointer}.mode button.active{background:var(--gold);color:#171717}.table-power,.reset-table{min-height:40px;border:1px solid var(--line);border-radius:10px;background:#29332d;color:white;padding:7px 10px;font-weight:800;cursor:pointer}.table-power.on{background:#087648;border-color:#26a36f}.table-power.off{background:#672b28;border-color:#9a403b}.table-card.inactive .mode button,.table-card.inactive .reset-table{pointer-events:none}
     .board{position:relative;width:100%;max-width:330px;aspect-ratio:1/.83;margin:0 auto}
-    .felt{position:absolute;left:21%;top:25%;width:58%;height:50%;border-radius:48%;background:linear-gradient(145deg,#138155,#075c3b);border:8px solid #6b3e22;box-shadow:inset 0 0 0 2px #ffffff25,0 5px 12px #0007;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white}.felt-letter{font-size:34px;font-weight:950;line-height:1}.felt-label{font-size:11px;font-weight:850;opacity:.8;margin-top:5px}
+    .felt{position:absolute;left:21%;top:25%;width:58%;height:50%;border-radius:48%;background:linear-gradient(145deg,#138155,#075c3b);border:8px solid #6b3e22;box-shadow:inset 0 0 0 2px #ffffff25,0 5px 12px #0007;display:flex;align-items:center;justify-content:center;color:white}.felt-content{display:flex;flex-direction:column;align-items:center;justify-content:center}.felt-letter{font-size:34px;font-weight:950;line-height:1}.felt-label{font-size:11px;font-weight:850;opacity:.8;margin-top:5px}
     .dealer{position:absolute;left:50%;top:0;transform:translateX(-50%);width:52px;height:52px;border-radius:14px;border:2px solid #d8b24a;background:#f0e4b4;color:#282111;box-shadow:0 3px 8px #0008;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:950;z-index:2;cursor:default}.dealer strong{font-size:19px;line-height:1}.dealer span{font-size:8px;margin-top:4px;letter-spacing:.5px}
     .seat{position:absolute;width:50px;height:50px;border-radius:50%;border:2px solid #718078;background:var(--seat);color:white;font-weight:900;cursor:pointer;box-shadow:0 3px 8px #0008;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;transform:translate(-50%,-50%);transition:transform .08s,opacity .15s,outline .08s;touch-action:none}.seat:active{transform:translate(-50%,-50%) scale(.92)}.seat:focus-visible{outline:4px solid #75a7ff;outline-offset:2px}.seat[data-state="1"]{background:var(--gold);color:#111;border-color:#a57e00}.seat[data-state="2"]{background:var(--red);color:white;border-color:#8e1d1a}.seat.hidden{display:none}.seat:disabled{cursor:default}.seat.dragging{opacity:.28}.seat.drop-target{outline:5px solid #65e6a6;outline-offset:3px}.seat.drop-blocked{outline:5px solid #ff746e;outline-offset:3px}.seat-no{font-size:17px}.state-label{font-size:8px;margin-top:3px;letter-spacing:.1px}
     .drag-ghost{position:fixed;z-index:9999;width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;font-weight:900;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 10px 25px #000a}.drag-ghost[data-state="1"]{background:var(--gold);color:#111;border:3px solid #a57e00}.drag-ghost[data-state="2"]{background:var(--red);color:white;border:3px solid #8e1d1a}.drag-ghost .seat-no{font-size:17px}.drag-ghost .state-label{font-size:8px;margin-top:3px}.is-dragging{user-select:none;-webkit-user-select:none}
     .notice{text-align:center;color:var(--muted);font-size:12px;margin:16px 0 0;min-height:18px}
     @media(min-width:1100px){
-      .room{grid-template-columns:repeat(6,minmax(150px,1fr));grid-template-rows:repeat(5,minmax(235px,auto));gap:20px 14px;align-items:center;position:relative;padding:18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(90deg,transparent 32.4%,#667069 32.4%,#667069 32.8%,transparent 32.8%) 0 0/100% 25%,linear-gradient(0deg,transparent 74%,#667069 74%,#667069 75%,transparent 75%) 0 0/32.8% 50%,#121814}
+      .room{grid-template-columns:repeat(6,minmax(150px,1fr));grid-template-rows:repeat(5,minmax(235px,auto));gap:20px 14px;align-items:center;position:relative;padding:18px;border:1px solid var(--line);border-radius:18px;background:#121814}
       .table-card{width:100%;max-width:315px;justify-self:center}
       .table-card[data-table="A"]{grid-column:4;grid-row:1}.table-card[data-table="B"]{grid-column:6;grid-row:1}
       .table-card[data-table="C"]{grid-column:6;grid-row:2}.table-card[data-table="D"]{grid-column:6;grid-row:3}
@@ -49,6 +49,8 @@
       .table-card.orientation-right .dealer{left:auto;right:-3px;top:42%;transform:translateY(-50%)}
       .table-card.orientation-left .dealer{left:-3px;top:42%;transform:translateY(-50%)}
       .table-card.orientation-bottom .dealer{left:50%;top:auto;bottom:-3px;transform:translateX(-50%)}
+      .room:not(.compact-view) .table-card[data-table="K"] .felt,.room:not(.compact-view) .table-card[data-table="L"] .felt{transform:rotate(90deg)}
+      .room:not(.compact-view) .table-card[data-table="K"] .felt-content,.room:not(.compact-view) .table-card[data-table="L"] .felt-content{transform:rotate(-90deg)}
       .room.compact-view{grid-template-columns:repeat(auto-fit,minmax(292px,1fr));grid-template-rows:none;gap:16px;padding:0;border:0;background:none}
       .room.compact-view .table-card{grid-column:auto;grid-row:auto;max-width:none;margin:0;outline:0}
       .room.compact-view .table-card[data-table="G"]::before{display:none}
@@ -120,6 +122,6 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
-<script src="./app.js?v=6"></script>
+<script src="./app.js?v=7"></script>
 </body>
 </html>
